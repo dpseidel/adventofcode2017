@@ -47,59 +47,58 @@ ansmat <- matrix(c(4,3,2,3,4,3,2,1,2,3,2,1,0,1,2,3,2,1,2,3,4,3,2,3,4),nrow=5,
 # so I guess first thing is to see which matrix size the value calls for, by assessing which square it is closest. 
 # so 12, is greater than 9 but less than 25 so it requires a 5x5
 
-n <- seq(1, 10000, 2)
-sq_n <- n^2
-val = 1024
-test <- which(val >= sq_n)
-if(any(val == sq_n[test])){
-  m <- matrix(ncol = sqrt(sq_n[test[-1]]), nrow = sqrt(sq_n[test[-1]]))
-} else {
-  m <- matrix(ncol = sqrt(sq_n[length(test)+1]), nrow = sqrt(sq_n[length(test)+1]))
-}
-m[ceiling(nrow(m)/2),ceiling(ncol(m)/2)] <- 0
-# hence
-q1 = ceiling(nrow(m)/2)
-q2 = ceiling(nrow(m)/2)
-# so now I just have to figure out how to place, p1,p2. 
-steps <- matrix(nrow=q1,ncol=q2)
-for(i in 1:ncol(m)){
-    steps[i,] <- c(seq(from = (ncol(m)-i), by=-1, length.out = (ncol(m)-q1 + 1)))
-    }
-# throws a warning when it's not a perfect matrix. 
-# still works
-
-mirror <- function (x) 
-{
+mirror <- function(x){
   xx <- as.data.frame(x)
   xx <- rev(xx)
   xx <- as.matrix(xx)
   xx
 }
 
-rotate180 <- function (x) 
-{
+rotate180 <- function(x){
   xx <- rev(x)
   dim(xx) <- dim(x)
   xx
 }
 
-
-full <- rbind(cbind(steps, mirror(steps)[,-1]), cbind(mirror(rotate180(steps))[-1,], rotate180(steps)[-1,-1]))
-# throws a warning when it's not a perfect matrix. 
-# still works
-
-# now need to match the steps matrix to the value... 
-
+manhattan_steps_matrix<- function(val){
+  if(val==1){return(0)}
+  n <- seq(1, 10000, 2)
+  sq_n <- n^2
+  test <- which(val >= sq_n)
+  if(any(val == sq_n[test])){
+    m <- matrix(ncol = sqrt(sq_n[test[-1]]), nrow = sqrt(sq_n[test[-1]]))
+    } else {
+      m <- matrix(ncol = sqrt(sq_n[length(test)+1]), nrow = sqrt(sq_n[length(test)+1]))
+      }
+  m[ceiling(nrow(m)/2),ceiling(ncol(m)/2)] <- 0
+# hence
+  q1 = ceiling(nrow(m)/2)
+  q2 = ceiling(nrow(m)/2)
+# so now I just have to figure out how to place, p1,p2. 
+  steps <- matrix(nrow=q1,ncol=q2)
+  for(i in 1:q1){
+    steps[i,] <- c(seq(from = (ncol(m)-i), by=-1, length.out = (ncol(m)-q1 + 1)))
+  }
+  
+  full <- rbind(cbind(steps, mirror(steps)[,-1]), cbind(mirror(rotate180(steps))[-1,], rotate180(steps)[-1,-1]))
+  colnames(full) <-NULL
+  
+  return(full)
+}
 
 #Data from square 1 is carried 0 steps, since it's at the access port.
 test1 = 1
 ans1 = 0
+
+
 #Data from square 12 is carried 3 steps, such as: down, left, left.
 test2 = 12
 ans2 = 3
+
 #Data from square 23 is carried only 2 steps: up twice.
 test3 = 23
 ans3 = 2
+
 #Data from square 1024 must be carried 31 steps.
 test4=1024
 ans4=31
