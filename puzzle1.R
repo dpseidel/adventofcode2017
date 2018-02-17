@@ -58,24 +58,13 @@ solve_puzzle1B <- function(captcha){
   char <- str_split(captcha, "")
   num <- as.numeric(char[[1]])
   answer = 0 
-  tally = 0
-  known_val = num[1]
-  for(i in 2:length(num)){
-    
-    if(known_val == num[i]){
-      tally = tally + 1
-    }else{
-      tally = 0
-      known_val = num[i]
-    }
-    
-    if (tally > 0){answer = answer + num[i]}
-    
-    if((i == length(num)) & (num[i] == num[1])){
-      answer = answer + num[1]
-    }
+  for(i in 1:length(num)){
+  
+    if(num[i] %in% num[i+(length(num)/2)]){ # this works because it returns FALSE rather than NA but it's not ideal... 
+      answer = answer + num[i]}
+  
   }
-  return(answer)
+  return(answer*2) # kind of hacky but works
 }
 
 
@@ -87,6 +76,9 @@ solve_puzzle1B <- function(captcha){
 test1b <- c("1212", "1221", "123425", "123123","12131415") 
 ans1b <- c(6,0,4,12,4)
 
+map_dbl(test1b, solve_puzzle1B) == ans1b
 
+
+solve_puzzle1B(captcha)
 
 
